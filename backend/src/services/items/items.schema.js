@@ -9,7 +9,10 @@ export const itemsSchema = Type.Object(
     {
         _id: ObjectIdSchema(),
         name: Type.String(),
-        price: Type.Number()
+        price: Type.Number(),
+        image: Type.String(),
+        comment: Type.String(),
+        description: Type.Optional(Type.String()) 
     },
     {$id: 'Items', additionalProperties: false}
 )
@@ -19,7 +22,7 @@ export const itemsResolver = resolve({})
 export const itemsExternalResolver = resolve({})
 
 // Schema for creating new entries
-export const itemsDataSchema = Type.Pick(itemsSchema, ['name', 'price'], {
+export const itemsDataSchema = Type.Pick(itemsSchema, ['name', 'price', 'image', 'comment', 'description'], {
     $id: 'ItemsData'
 })
 export const itemsDataValidator = getValidator(itemsDataSchema, dataValidator)
@@ -33,7 +36,7 @@ export const itemsPatchValidator = getValidator(itemsPatchSchema, dataValidator)
 export const itemsPatchResolver = resolve({})
 
 // Schema for allowed query properties
-export const itemsQueryProperties = Type.Pick(itemsSchema, ['_id', 'name', 'price'])
+export const itemsQueryProperties = Type.Pick(itemsSchema, ['_id', 'name', 'price','image', 'comment', 'description'])
 export const itemsQuerySchema = Type.Intersect(
     [
         querySyntax(itemsQueryProperties),

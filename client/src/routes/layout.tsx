@@ -33,6 +33,13 @@ export type CartItem = {
     qty: number;
 }
 
+export type Items = {
+    _id: number;
+    price: number;
+    name: string;
+    image: string;
+    comment: string
+}
 
 export const useItemsData = routeLoader$(async () => {
     const item = await fetch(

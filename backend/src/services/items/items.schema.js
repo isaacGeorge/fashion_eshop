@@ -1,8 +1,9 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import {resolve} from '@feathersjs/schema'
+import {resolve, virtual} from '@feathersjs/schema'
 import {Type, getValidator, querySyntax} from '@feathersjs/typebox'
 import {ObjectIdSchema} from '@feathersjs/typebox'
 import {dataValidator, queryValidator} from '../../validators.js'
+import {categoriesSchema} from "../categories/categories.schema.js";
 
 // Main data model schema
 export const itemsSchema = Type.Object(
@@ -12,17 +13,36 @@ export const itemsSchema = Type.Object(
         price: Type.Number(),
         image: Type.String(),
         comment: Type.String(),
-        description: Type.Optional(Type.String()) 
+        description: Type.Optional(Type.String()),
+        categoryId: Type.String(),
+        category: Type.Ref(categoriesSchema),
+        shopIds: Type.Optional(Type.Array(Type.String()))
     },
     {$id: 'Items', additionalProperties: false}
 )
 export const itemsValidator = getValidator(itemsSchema, dataValidator)
-export const itemsResolver = resolve({})
+export const itemsResolver = resolve({
+    category: virtual(async (item, context) => {
+        return context.app.service('categories').get(item.categoryId)
+    }),
+
+    shops: virtual(async (item, context) => {
+        const {data} = await context.app.service('shops').find({
+            query: {
+                _id: {
+                    $in: item.shopIds || []
+                }
+            }
+        })
+
+        return data;
+    })
+})
 
 export const itemsExternalResolver = resolve({})
 
 // Schema for creating new entries
-export const itemsDataSchema = Type.Pick(itemsSchema, ['name', 'price', 'image', 'comment', 'description'], {
+export const itemsDataSchema = Type.Pick(itemsSchema, ['name', 'price', 'image', 'comment', 'description', 'categoryId'], {
     $id: 'ItemsData'
 })
 export const itemsDataValidator = getValidator(itemsDataSchema, dataValidator)
@@ -36,7 +56,7 @@ export const itemsPatchValidator = getValidator(itemsPatchSchema, dataValidator)
 export const itemsPatchResolver = resolve({})
 
 // Schema for allowed query properties
-export const itemsQueryProperties = Type.Pick(itemsSchema, ['_id', 'name', 'price','image', 'comment', 'description'])
+export const itemsQueryProperties = Type.Pick(itemsSchema, ['_id', 'name', 'price', 'image', 'comment', 'description', 'categoryId'])
 export const itemsQuerySchema = Type.Intersect(
     [
         querySyntax(itemsQueryProperties),

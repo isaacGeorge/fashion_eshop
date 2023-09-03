@@ -10,10 +10,11 @@ import {
 } from '@builder.io/qwik';
 import type {RequestHandler} from "@builder.io/qwik-city";
 import {routeLoader$} from '@builder.io/qwik-city';
-import {Items} from '~/types';
+
 import Header from "~/components/header";
 import {Store} from "~/store";
 import Footer from "~/components/footer";
+import client from "~/feathersAPI";
 
 
 export const onGet: RequestHandler = async ({cacheControl}) => {
@@ -42,15 +43,25 @@ export type Items = {
 }
 
 export const useItemsData = routeLoader$(async () => {
-    const item = await fetch(
-        `http://${import.meta.env.PUBLIC_BACKEND || "localhost"}:${import.meta.env.PUBLIC_BACKEND_PORT}/api/items?populate=image`,
-        {
-            method: "GET",
-        }
-    );
-    const itemJson = await item.json();
-    return (itemJson.data);
+    try {
+        const {data} = await client.service('items').find();
+        return data;
+    } catch (e) {
+        console.log(e)
+    }
 });
+
+
+// export const useItemsData = routeLoader$(async () => {
+//     const item = await fetch(
+//         `http://${import.meta.env.PUBLIC_BACKEND || "localhost"}:${import.meta.env.PUBLIC_BACKEND_PORT}/api/items?populate=image`,
+//         {
+//             method: "GET",
+//         }
+//     );
+//     const itemJson = await item.json();
+//     return (itemJson.data);
+// });
 
 export const CountNumberContextId = createContextId('countNumber')
 export const CartContext = createContextId<Signal<CartItem[]>>('cart');
@@ -84,7 +95,7 @@ export default component$(() => {
 
 
         const localStorageCart = localStorage.getItem('cart')
-        if(localStorageCart) {
+        if (localStorageCart) {
             cart.value = JSON.parse(localStorageCart);
         }
     })

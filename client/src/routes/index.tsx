@@ -2,18 +2,12 @@ import {$, component$, Signal, useComputed$, useContext, useSignal, useStore} fr
 import type {DocumentHead} from "@builder.io/qwik-city";
 import {
     CartContext,
-    CartItem,
-    CountNumberContextId,
     IsInputHiddenContextId, IsSearchIconVisibleContextId,
     itemsContextId,
     QuerryContextId
 } from '~/routes/layout';
-import productsData, {Store} from "~/store";
 import ItemCard from "~/components/item-card";
 import Subscribe from "~/components/subscribe";
-import {Link} from "@builder.io/qwik-city";
-import {getItemImage} from "~/routes/utils";
-import {Items} from "~/types";
 // import React from "react";
 import Carousel from "~/components/carousel";
 
@@ -22,7 +16,6 @@ export default component$(() => {
     const items = useContext(itemsContextId);
     const cart = useContext(CartContext);
     const querry = useContext(QuerryContextId);
-    // const products: Store = useStore(productsData);
     const activeTab = useSignal("");
     const isInputHidden = useContext(IsInputHiddenContextId);
     const isSearchIconVisible = useContext(IsSearchIconVisibleContextId);
@@ -46,23 +39,23 @@ export default component$(() => {
         }
     ])
     const itemsData = useComputed$(() => {
-        return items.filter(item => ((item.attributes.category === activeTab.value) || (activeTab.value === ""))).filter((eventData) => {
+        return items.filter(item => ((item?.category === activeTab.value) || (activeTab.value === ""))).filter((eventData) => {
             if (querry.value === "") {
                 return eventData;
-            } else if (eventData.attributes.name.toLowerCase().includes(querry.value.toLowerCase())) {
+            } else if (eventData?.name.toLowerCase().includes(querry.value.toLowerCase())) {
                 return eventData
             }
         }).map((item) => {
-            const category = item.attributes.category;
-            const itname = item.attributes.name;
-            const itprice = "$" + item.attributes.price;
-            const itID = item.id;
+            const category = item?.category;
+            const itname = item?.name;
+            const itprice = "$" + items?.price;
+            const itID = item?.id;
 
             return {
                 tag: category,
                 name: itname,
                 price: itprice,
-                image: getItemImage(item),
+                image: item.image,
                 id: itID
             }
         })

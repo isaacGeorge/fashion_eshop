@@ -9,7 +9,9 @@ export default component$(() => {
 
 
     return (
-       <p>Welcom</p>
+       <div>
+           <p>welcome to dashboard</p>
+       </div>
     );
 });
 

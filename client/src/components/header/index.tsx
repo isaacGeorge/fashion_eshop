@@ -75,6 +75,12 @@ export default component$(() => {
                                 </div>
                             </Link>
                         </li>
+                        <li class='ml-2' >
+                            <Link href='/login'>
+                                <button class='bg-orange-500 rounded-full px-4 py-2 text-sm text-white hover:bg-orange-600' type='button'>Login
+                                </button>
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </nav>
